@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PolygonEditor.Desktop.Models
+namespace PolygonEditor.Desktop.Models.InputHandlers
 {
     public class CreationInputHandler : InputHandler
     {
@@ -23,7 +23,7 @@ namespace PolygonEditor.Desktop.Models
                 polygon.SetClosed();
             }
             //check if polygon is not closed and if point is not on a edge
-            else if (!polygon.IsClosed &&  vertexesBetweenPoint.Item1 == null && vertexesBetweenPoint.Item2 == null)
+            else if (!polygon.IsClosed &&  (vertexesBetweenPoint.Item1 == null && vertexesBetweenPoint.Item2 == null))
             {
                 polygon.AddVertex(mouseX, mouseY);
             }

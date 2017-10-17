@@ -30,6 +30,8 @@ namespace PolygonEditor.Desktop.Models
 
         public Vertex AddVertex(int x, int y, Vertex v1, Vertex v2)
         {
+            constraints.RemoveAll(c => c.IsVertexInvolved(v1) && c.IsVertexInvolved(v2));
+
             for (int i = 0; i < vertexes.Count; i++)
             {
                 if (vertexes[i] == v1 && vertexes[(i + 1) % vertexes.Count] == v2)
@@ -45,10 +47,35 @@ namespace PolygonEditor.Desktop.Models
 
         public void AddConstraint(IVertexConstraint constraint)
         {
+            if(constraint.IsCollisionWithConstraints(constraints))
+                return;
+
             if (constraint.IsContraintValid() || constraint.TryRepairConstraint(this))
             {
                 constraints.Add(constraint);
             }
+        }
+
+        public void RemoveConstraint(params Vertex[] vertexesGroup)
+        {
+            var constraintsToDelete = new List<IVertexConstraint>();
+            foreach (var vertexConstraint in constraints)
+            {
+                bool isToDelete = true;
+                foreach (var vertexInGroup in vertexesGroup)
+                {
+                    if (!vertexConstraint.IsVertexInvolved(vertexInGroup))
+                    {
+                        isToDelete = false;
+                        break;
+                    }
+                }
+
+                if(isToDelete)
+                    constraintsToDelete.Add(vertexConstraint);
+            }
+
+            constraints.RemoveAll(x => constraintsToDelete.Contains(x));
         }
 
         public void SetVertexPosition(Vertex p, int x, int y)
@@ -87,7 +114,9 @@ namespace PolygonEditor.Desktop.Models
 
         public void RemoveVertex(int x, int y)
         {
-            vertexes.RemoveAll(p => Math.Abs(p.X - x) <= Vertex.Epsilon && Math.Abs(p.Y - y) <= Vertex.Epsilon);
+            var vertex = GetVertex(x, y);
+            vertexes.Remove(vertex);
+            constraints.RemoveAll(c => c.IsVertexInvolved(vertex));
         }
 
         public Vertex GetVertex(int x, int y)
@@ -97,6 +126,9 @@ namespace PolygonEditor.Desktop.Models
 
         public (Vertex p1, Vertex p2) GetVertexesBetween(int x, int y)
         {
+            if (vertexes.Count < 2)
+                return (null, null);
+
             for (int i = 0; i < vertexes.Count; i++)
             {
                 if (IsBetweenVertexes(x, y, vertexes[i], vertexes[(i + 1) % vertexes.Count]))
@@ -111,6 +143,11 @@ namespace PolygonEditor.Desktop.Models
         public IEnumerable<Vertex> GetVertexes()
         {
             return vertexes;
+        }
+
+        public IEnumerable<IVertexConstraint> GetConstraints()
+        {
+            return constraints;
         }
 
         public IEnumerable<(Vertex v1, Vertex v2)> GetEdges()
@@ -129,9 +166,9 @@ namespace PolygonEditor.Desktop.Models
 
         private bool IsBetweenVertexes(int x, int y, Vertex p1, Vertex p2)
         {
-            if (x <= Math.Min(p1.X, p2.X) || x >= Math.Max(p1.X, p2.X))
+            if ((x <= Math.Min(p1.X, p2.X) || x >= Math.Max(p1.X, p2.X)) && Math.Abs(p1.X-p2.X)>20)
                 return false;
-            if (y <= Math.Min(p1.Y, p2.Y) || y >= Math.Max(p1.Y, p2.Y))
+            if ((y <= Math.Min(p1.Y, p2.Y) || y >= Math.Max(p1.Y, p2.Y)) && Math.Abs(p1.Y-p2.Y)>20)
                 return false;
 
             int vec = (x - p1.X) * (p2.Y - p1.Y) - (p2.X - p1.X) * (y - p1.Y);

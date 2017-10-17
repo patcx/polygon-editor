@@ -12,6 +12,10 @@ namespace PolygonEditor.Desktop.Models.Constraints
 
         bool IsContraintValid();
 
+        bool IsCollisionWithConstraints(IEnumerable<IVertexConstraint> otherConstraints);
+
         bool TryRepairConstraint(Polygon polygon);
+
+        IEnumerable<Vertex> GetVertexes();
     }
 }

@@ -71,6 +71,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Views\EdgeContextWindow.xaml.cs">
+      <DependentUpon>EdgeContextWindow.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Views\VertexContextWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -80,18 +87,26 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Helpers\BitmapExtender.cs" />
+    <Compile Include="Models\Constraints\HorizontalEdgeConstraint.cs" />
     <Compile Include="Models\Constraints\VerticalEdgeConstraint.cs" />
-    <Compile Include="Models\CreationInputHandler.cs" />
-    <Compile Include="Models\EditorInputHandler.cs" />
-    <Compile Include="Models\InputHandler.cs" />
+    <Compile Include="Models\InputHandlers\CreationInputHandler.cs" />
+    <Compile Include="Models\InputHandlers\EditorInputHandler.cs" />
+    <Compile Include="Models\InputHandlers\InputHandler.cs" />
     <Compile Include="Models\Constraints\IVertexConstraint.cs" />
     <Compile Include="Models\Polygon.cs" />
     <Compile Include="Models\Vertex.cs" />
     <Compile Include="ViewModels\PolygonViewModel.cs" />
+    <Compile Include="Views\VertexContextWindow.xaml.cs">
+      <DependentUpon>VertexContextWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\EdgeContextWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

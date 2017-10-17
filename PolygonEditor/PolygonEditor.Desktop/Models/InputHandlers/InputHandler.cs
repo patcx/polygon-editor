@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PolygonEditor.Desktop.Models
+namespace PolygonEditor.Desktop.Models.InputHandlers
 {
     public abstract class InputHandler
     {

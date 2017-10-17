@@ -11,6 +11,8 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using PolygonEditor.Desktop.Helpers;
 using PolygonEditor.Desktop.Models;
+using PolygonEditor.Desktop.Models.Constraints;
+using PolygonEditor.Desktop.Models.InputHandlers;
 
 namespace PolygonEditor.Desktop.ViewModels
 {
@@ -95,6 +97,32 @@ namespace PolygonEditor.Desktop.ViewModels
             foreach (var vertex in polygon.GetVertexes())
             {
                 bitmap.DrawCircle(vertex, Color.Maroon);
+            }
+
+            foreach (var vertexConstraint in polygon.GetConstraints())
+            {
+                var vertexes = vertexConstraint.GetVertexes().ToArray();
+
+                if (vertexes.Count() == 2)
+                {
+                    int x = (vertexes[0].X + vertexes[1].X) / 2;
+                    int y = (vertexes[0].Y + vertexes[1].Y) / 2;
+
+
+                    if (vertexConstraint is VerticalEdgeConstraint)
+                    {
+                        x += 10;
+                        bitmap.DrawLine(new Vertex(x, y-5), new Vertex(x, y+5), Color.Maroon);
+                        bitmap.DrawLine(new Vertex(x+1, y-5), new Vertex(x+1, y+5), Color.Maroon);
+                    }
+                    else if (vertexConstraint is HorizontalEdgeConstraint)
+                    {
+                        y += 10;
+                        bitmap.DrawLine(new Vertex(x - 5, y), new Vertex(x + 5, y), Color.Maroon);
+                        bitmap.DrawLine(new Vertex(x - 5, y+1), new Vertex(x + 5, y+1), Color.Maroon);
+                    }
+                }
+
             }
 
             BitmapCanvas = bitmap.ConvertToBitmapImage();

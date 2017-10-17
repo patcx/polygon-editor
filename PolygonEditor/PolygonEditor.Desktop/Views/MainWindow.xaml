@@ -56,4 +56,5 @@
            VerticalAlignment="Top" 
            Source="{Binding BitmapCanvas}" 
            Stretch="None"></Image>
+    
 </Window>

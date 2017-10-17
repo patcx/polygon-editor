@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace PolygonEditor.Desktop.Models.Constraints
 {
-    public class VerticalEdgeConstraint : IVertexConstraint
+    public class HorizontalEdgeConstraint : IVertexConstraint
     {
         private Vertex v1;
         private Vertex v2;
 
 
-        public VerticalEdgeConstraint(Vertex v1, Vertex v2)
+        public HorizontalEdgeConstraint(Vertex v1, Vertex v2)
         {
             this.v1 = v1;
             this.v2 = v2;
@@ -20,12 +20,12 @@ namespace PolygonEditor.Desktop.Models.Constraints
 
         public bool IsVertexInvolved(Vertex vertex)
         {
-            return (v1 == vertex || v2 == vertex);
+            return (v1 == vertex || v2 == vertex) ;
         }
 
         public bool IsContraintValid()
         {
-            return v1.X == v2.X && v1.Y != v2.Y;
+            return v1.Y == v2.Y && v1.X != v2.X;
         }
 
         public bool TryRepairConstraint(Polygon polygon)
@@ -33,16 +33,16 @@ namespace PolygonEditor.Desktop.Models.Constraints
             if (IsContraintValid())
                 return true;
 
-            if (v1.IsLocked && v2.IsLocked)
+            if(v1.IsLocked && v2.IsLocked)
                 return false;
 
             if (!v1.IsLocked)
             {
-                polygon.SetVertexPosition(v1, v2.X, v1.Y);
+                polygon.SetVertexPosition(v1, v1.X, v2.Y);
             }
             else
             {
-                polygon.SetVertexPosition(v2, v1.X, v2.Y);
+                polygon.SetVertexPosition(v2, v2.X, v1.Y);
             }
 
             return IsContraintValid();
@@ -52,9 +52,9 @@ namespace PolygonEditor.Desktop.Models.Constraints
         {
             foreach (var vertexConstraint in otherConstraints)
             {
-                if(vertexConstraint.IsVertexInvolved(v1) && vertexConstraint is VerticalEdgeConstraint)
+                if (vertexConstraint.IsVertexInvolved(v1) && vertexConstraint is HorizontalEdgeConstraint)
                     return true;
-                if (vertexConstraint.IsVertexInvolved(v2) && vertexConstraint is VerticalEdgeConstraint)
+                if (vertexConstraint.IsVertexInvolved(v2) && vertexConstraint is HorizontalEdgeConstraint)
                     return true;
             }
 

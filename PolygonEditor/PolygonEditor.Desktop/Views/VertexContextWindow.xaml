@@ -1,0 +1,31 @@
+﻿<Window x:Class="PolygonEditor.Desktop.Views.VertexContextWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PolygonEditor.Desktop.Views"
+        mc:Ignorable="d"
+        Title="ContextWindow" 
+        Height="94" 
+        Width="114"
+        WindowStyle="None">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Button Grid.Row="0" Content="Ustaw kąt"/>
+        <TextBox x:Name="angle" Grid.Row="0" Grid.Column="1"></TextBox>
+        <Button Grid.Row="1" Grid.ColumnSpan="2" Content="Usuń wierzchołek"/>
+        <Button Grid.Row="2" Grid.ColumnSpan="2" Content="Usuń ograniczenia"/>
+        <Button Grid.Row="3" Grid.ColumnSpan="2" Content="Anuluj" Click="Cancel"/>
+
+    </Grid>
+</Window>
