@@ -140,6 +140,21 @@ namespace PolygonEditor.Desktop.Models
             return (null, null);
         }
 
+        public (Vertex v1, Vertex v2) GetNeighbours(Vertex middle)
+        {
+            Vertex prev = vertexes.Last();
+            for (int i = 0; i < vertexes.Count; i++)
+            {
+                if (vertexes[i] == middle)
+                {
+                    return (prev, vertexes[(i + 1) % vertexes.Count]);
+                }
+                prev = vertexes[i];
+            }
+
+            return (null, null);
+        }
+
         public IEnumerable<Vertex> GetVertexes()
         {
             return vertexes;

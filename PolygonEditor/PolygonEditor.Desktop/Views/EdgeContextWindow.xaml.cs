@@ -37,8 +37,8 @@ namespace PolygonEditor.Desktop.Views
         public static EdgeContextResult Show(int x, int y)
         {
             var window = new EdgeContextWindow();
-            window.Top = y;
-            window.Left = x;
+            window.Top = Application.Current.MainWindow.Top + y;
+            window.Left = Application.Current.MainWindow.Left + x;
             window.ShowDialog();
             return window.result;
         }

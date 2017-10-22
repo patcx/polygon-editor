@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using PolygonEditor.Desktop.Models.Constraints;
 using PolygonEditor.Desktop.Views;
 
@@ -47,12 +48,30 @@ namespace PolygonEditor.Desktop.Models.InputHandlers
 
         public override void MouseRightDown(int mouseX, int mouseY)
         {
-            var verticle = polygon.GetVertex(mouseX, mouseY);
+            var vertex = polygon.GetVertex(mouseX, mouseY);
             var edge = polygon.GetVertexesBetween(mouseX, mouseY);
-            if (edge.Item1 != null && edge.Item2 != null)
+            if (vertex != null)
+            {
+                var result = VertexContextWindow.Show(mouseX, mouseY);
+                if (result.Item1 == VertexContextWindow.VertexContextResult.DeleteVertex && polygon.GetVertexes().Count() > 3)
+                    polygon.RemoveVertex(mouseX, mouseY);
+                else if (result.Item1 == VertexContextWindow.VertexContextResult.DeleteConstraints)
+                {
+                    polygon.RemoveConstraint(vertex);
+                }
+
+                if (result.Item1 == VertexContextWindow.VertexContextResult.AddAngleConstraint 
+                    && result.Item2 > 0)
+                {
+                    var neighbours = polygon.GetNeighbours(vertex);
+                    polygon.AddConstraint(new AngleConstraint(result.Item2, neighbours.Item1, vertex, neighbours.Item2));
+                }
+
+            }
+            else if (edge.Item1 != null && edge.Item2 != null)
             {
                 var result = EdgeContextWindow.Show(mouseX, mouseY);
-                if (result != EdgeContextWindow.EdgeContextResult.Cancel)
+                if (result == EdgeContextWindow.EdgeContextResult.DeleteConstraints)
                 {
                     polygon.RemoveConstraint(edge.Item1, edge.Item2);
                 }
@@ -67,8 +86,6 @@ namespace PolygonEditor.Desktop.Models.InputHandlers
                 }
             }
 
-            if(polygon.GetVertexes().Count() > 3)
-                polygon.RemoveVertex(mouseX, mouseY);
         }
 
         public override void MouseMove(int mouseX, int mouseY)

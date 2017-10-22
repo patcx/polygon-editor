@@ -25,9 +25,57 @@ namespace PolygonEditor.Desktop.Views
         }
 
 
+        public enum VertexContextResult
+        {
+            Cancel,
+            AddAngleConstraint,
+            DeleteVertex,
+            DeleteConstraints
+        }
+
+        private VertexContextResult result;
+        private int angleValue = -1;
+
+
+        public static (VertexContextResult, int) Show(int x, int y)
+        {
+            var window = new VertexContextWindow();
+            window.Top = Application.Current.MainWindow.Top + y;
+            window.Left = Application.Current.MainWindow.Left + x;
+            window.ShowDialog();
+            return (window.result, window.angleValue);
+        }
+
+        private void DeleteConstraints(object sender, RoutedEventArgs e)
+        {
+            result = VertexContextResult.DeleteConstraints;
+            Close();
+        }
+
         private void Cancel(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            result = VertexContextResult.Cancel;
+            Close();
+        }
+
+        private void DeleteVertex(object sender, RoutedEventArgs e)
+        {
+            result = VertexContextResult.DeleteVertex;
+            Close();
+        }
+
+        private void AddAngleConstraint(object sender, RoutedEventArgs e)
+        {
+            result = VertexContextResult.AddAngleConstraint;
+            try
+            {
+                angleValue = Int32.Parse(angle.Text);
+            }
+            catch
+            {
+                angleValue = -1;
+            }
+            Close();
         }
     }
 }

@@ -21,10 +21,10 @@
             <ColumnDefinition Width="Auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <Button Grid.Row="0" Content="Ustaw kąt"/>
-        <TextBox x:Name="angle" Grid.Row="0" Grid.Column="1"></TextBox>
-        <Button Grid.Row="1" Grid.ColumnSpan="2" Content="Usuń wierzchołek"/>
-        <Button Grid.Row="2" Grid.ColumnSpan="2" Content="Usuń ograniczenia"/>
+        <Button Grid.Row="0" Content="Ustaw kąt" Click="AddAngleConstraint"/>
+        <TextBox x:Name="angle" Grid.Row="0" Grid.Column="1" Width="30"></TextBox>
+        <Button Grid.Row="1" Grid.ColumnSpan="2" Content="Usuń wierzchołek" Click="DeleteVertex"/>
+        <Button Grid.Row="2" Grid.ColumnSpan="2" Content="Usuń ograniczenia" Click="DeleteConstraints"/>
         <Button Grid.Row="3" Grid.ColumnSpan="2" Content="Anuluj" Click="Cancel"/>
 
     </Grid>

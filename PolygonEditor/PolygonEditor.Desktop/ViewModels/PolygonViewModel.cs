@@ -96,32 +96,42 @@ namespace PolygonEditor.Desktop.ViewModels
 
             foreach (var vertex in polygon.GetVertexes())
             {
-                bitmap.DrawCircle(vertex, Color.Maroon);
+                var neighbours = polygon.GetNeighbours(vertex);
+                bitmap.DrawCircle(vertex, 3, Color.Maroon);
+
+                var angle = Vertex.AngleBetween(neighbours.Item1, vertex, neighbours.Item2);
+                bitmap.DrawText(vertex, angle.ToString(), Color.ForestGreen);
             }
 
             foreach (var vertexConstraint in polygon.GetConstraints())
             {
                 var vertexes = vertexConstraint.GetVertexes().ToArray();
 
-                if (vertexes.Count() == 2)
+                if (vertexConstraint is VerticalEdgeConstraint)
+                {
+                    int x = (vertexes[0].X + vertexes[1].X) / 2 + 10;
+                    int y = (vertexes[0].Y + vertexes[1].Y) / 2;
+                    x += 10;
+                    bitmap.DrawLine(new Vertex(x, y - 5), new Vertex(x, y + 5), Color.ForestGreen);
+                    bitmap.DrawLine(new Vertex(x + 1, y - 5), new Vertex(x + 1, y + 5), Color.ForestGreen);
+                }
+                else if (vertexConstraint is HorizontalEdgeConstraint)
                 {
                     int x = (vertexes[0].X + vertexes[1].X) / 2;
-                    int y = (vertexes[0].Y + vertexes[1].Y) / 2;
-
-
-                    if (vertexConstraint is VerticalEdgeConstraint)
-                    {
-                        x += 10;
-                        bitmap.DrawLine(new Vertex(x, y-5), new Vertex(x, y+5), Color.Maroon);
-                        bitmap.DrawLine(new Vertex(x+1, y-5), new Vertex(x+1, y+5), Color.Maroon);
-                    }
-                    else if (vertexConstraint is HorizontalEdgeConstraint)
-                    {
-                        y += 10;
-                        bitmap.DrawLine(new Vertex(x - 5, y), new Vertex(x + 5, y), Color.Maroon);
-                        bitmap.DrawLine(new Vertex(x - 5, y+1), new Vertex(x + 5, y+1), Color.Maroon);
-                    }
+                    int y = (vertexes[0].Y + vertexes[1].Y) / 2 + 10;
+                    y += 10;
+                    bitmap.DrawLine(new Vertex(x - 5, y), new Vertex(x + 5, y), Color.ForestGreen);
+                    bitmap.DrawLine(new Vertex(x - 5, y + 1), new Vertex(x + 5, y + 1), Color.ForestGreen);
                 }
+                else if (vertexConstraint is AngleConstraint)
+                {
+                    var v = vertexConstraint.GetVertexes().ToArray();
+                    Vertex middle = v[1];
+
+                    bitmap.DrawCircle(middle, 5, Color.ForestGreen);
+                }
+
+
 
             }
 
