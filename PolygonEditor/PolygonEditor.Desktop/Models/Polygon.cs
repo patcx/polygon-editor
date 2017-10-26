@@ -33,32 +33,34 @@ namespace PolygonEditor.Desktop.Models
                     if (i - 1 >= 0)
                     {
                         var v1 = vertexes[i - 1];
-                        if(Math.Abs(v1.X-vertex.X) < 5)
-                        {
-                            constraints.Add(new VerticalEdgeConstraint(v1, vertex));
-                        }
-                        if(Math.Abs(v1.Y-vertex.Y) < 5)
-                        {
-                            constraints.Add(new HorizontalEdgeConstraint(v1, vertex));
-                        }
+                        AddAutoConstraints(v1, vertex);
                     }
 
                     if(i+1 < vertexes.Count)
                     {
                         var v1 = vertexes[i + 1];
-                        if (Math.Abs(v1.X - vertex.X) < 5)
-                        {
-                            constraints.Add(new VerticalEdgeConstraint(v1, vertex));
-                        }
-                        if (Math.Abs(v1.Y - vertex.Y) < 5)
-                        {
-                            constraints.Add(new HorizontalEdgeConstraint(v1, vertex));
-                        }
+                        AddAutoConstraints(v1, vertex);
                     }
                 }
             }
 
             return vertex;
+        }
+
+        private void AddAutoConstraints(Vertex v1, Vertex v2)
+        {
+            if (Math.Abs(v1.X - v2.X) < 5)
+            {
+                var constraint = new VerticalEdgeConstraint(v1, v2);
+                constraints.Add(constraint);
+                constraint.TryRepairConstraint(this);
+            }
+            if (Math.Abs(v1.Y - v2.Y) < 5)
+            {
+                var constraint = new HorizontalEdgeConstraint(v1, v2);
+                constraints.Add(constraint);
+                constraint.TryRepairConstraint(this);
+            }
         }
 
         public Vertex AddVertex(int x, int y, Vertex v1, Vertex v2)
