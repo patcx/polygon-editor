@@ -18,21 +18,36 @@ namespace PolygonEditor.Desktop.ViewModels
 {
     public class PolygonViewModel : ObservableObject
     {
-        private  Polygon polygon = new Polygon();
-        private InputHandler inputHandler;
+        private  Polygon firstPolygon = new Polygon();
+        private  Polygon secondPolygon = new Polygon();
+
+        private InputHandler firstInputHandler;
+        private InputHandler secondInputHandler;
         public BitmapImage BitmapCanvas { get; set; }
 
         public PolygonViewModel()
         {
-            inputHandler = new CreationInputHandler(polygon);
+            firstInputHandler = new CreationInputHandler(firstPolygon);
+            secondInputHandler = new CreationInputHandler(secondPolygon);
         }
 
 
         public ICommand DeleteKeyDown => new RelayCommand(() =>
         {
-            polygon = new Polygon();
-            inputHandler = new CreationInputHandler(polygon);
-            RedrawPolygon();
+            if (secondPolygon.GetVertexes().Count() > 0)
+            {
+                secondPolygon = new Polygon();
+                secondInputHandler = new CreationInputHandler(secondPolygon);
+            }
+            else
+            {
+                firstPolygon = new Polygon();
+                firstInputHandler = new CreationInputHandler(firstPolygon);
+            }
+           
+
+            RedrawAllPolygons();
+
         });
 
         public ICommand MouseLeftDown => new RelayCommand<MouseButtonEventArgs>(x =>
@@ -40,11 +55,21 @@ namespace PolygonEditor.Desktop.ViewModels
             int mouseX = (int) x.GetPosition(Application.Current.MainWindow).X;
             int mouseY = (int) x.GetPosition(Application.Current.MainWindow).Y;
 
-            inputHandler.MouseLeftDown(mouseX, mouseY);
-            if(polygon.IsClosed && inputHandler is CreationInputHandler)
-                inputHandler = new EditorInputHandler(polygon);
+            var result = firstInputHandler.MouseLeftDown(mouseX, mouseY);
+            if(firstPolygon.IsClosed && firstInputHandler is CreationInputHandler)
+                firstInputHandler = new EditorInputHandler(firstPolygon);
+
+            if (!result)
+            {
            
-            RedrawPolygon();
+                if(secondInputHandler.MouseLeftDown(mouseX, mouseY))
+                    firstInputHandler.ResetLeftMousePressed();
+                if (secondPolygon.IsClosed && secondInputHandler is CreationInputHandler)
+                    secondInputHandler = new EditorInputHandler(secondPolygon);
+            }
+
+            RedrawAllPolygons();
+
         });
 
         public ICommand MouseLeftUp => new RelayCommand<MouseButtonEventArgs>(x =>
@@ -52,9 +77,11 @@ namespace PolygonEditor.Desktop.ViewModels
             int mouseX = (int)x.GetPosition(Application.Current.MainWindow).X;
             int mouseY = (int)x.GetPosition(Application.Current.MainWindow).Y;
 
-            inputHandler.MouseLeftUp(mouseX, mouseY);
+            firstInputHandler.MouseLeftUp(mouseX, mouseY);
+            secondInputHandler.MouseLeftUp(mouseX, mouseY);
 
-            RedrawPolygon();
+            RedrawAllPolygons();
+
         });
 
         public ICommand MouseRightDown => new RelayCommand<MouseButtonEventArgs>(x =>
@@ -62,9 +89,13 @@ namespace PolygonEditor.Desktop.ViewModels
             int mouseX = (int)x.GetPosition(Application.Current.MainWindow).X;
             int mouseY = (int)x.GetPosition(Application.Current.MainWindow).Y;
 
-            inputHandler.MouseRightDown(mouseX, mouseY);
+           var result = firstInputHandler.MouseRightDown(mouseX, mouseY);
+            if (!result)
+            {
+                secondInputHandler.MouseRightDown(mouseX, mouseY);
+            }
 
-            RedrawPolygon();
+            RedrawAllPolygons();
         });
 
         public ICommand MouseMove => new RelayCommand<MouseEventArgs>(x =>
@@ -72,24 +103,36 @@ namespace PolygonEditor.Desktop.ViewModels
             int mouseX = (int)x.GetPosition(Application.Current.MainWindow).X;
             int mouseY = (int)x.GetPosition(Application.Current.MainWindow).Y;
 
-            inputHandler.MouseMove(mouseX, mouseY);
+            firstInputHandler.MouseMove(mouseX, mouseY);
+            secondInputHandler.MouseMove(mouseX, mouseY);
 
-            RedrawPolygon();
+            RedrawAllPolygons();
         });
 
         public ICommand Resize => new RelayCommand(() =>
         {
-            RedrawPolygon();
+            RedrawAllPolygons();
         });
 
         
-
-        private void RedrawPolygon()
+        private void RedrawAllPolygons()
         {
             var bitmap = new Bitmap((int)Application.Current.MainWindow.ActualWidth, (int)Application.Current.MainWindow.ActualHeight);
             bitmap.Fill(Color.White);
 
-            foreach(var edge in polygon.GetEdges())
+            RedrawPolygon(bitmap, firstPolygon);
+            RedrawPolygon(bitmap, secondPolygon);
+
+            BitmapCanvas = bitmap.ConvertToBitmapImage();
+            bitmap.Dispose();
+            RaisePropertyChanged("BitmapCanvas");
+        }
+
+        private void RedrawPolygon(Bitmap bitmap, Polygon polygon)
+        {
+           
+
+            foreach (var edge in polygon.GetEdges())
             {
                 bitmap.DrawLine(edge.Item1, edge.Item2, Color.Black);
             }
@@ -100,7 +143,7 @@ namespace PolygonEditor.Desktop.ViewModels
                 bitmap.DrawCircle(vertex, 3, Color.Maroon);
 
                 var angle = Vertex.AngleBetween(neighbours.Item1, vertex, neighbours.Item2);
-                bitmap.DrawText(vertex, angle.ToString(), Color.ForestGreen);
+                //bitmap.DrawText(vertex, angle.ToString(), Color.ForestGreen);
             }
 
             foreach (var vertexConstraint in polygon.GetConstraints())
@@ -135,9 +178,6 @@ namespace PolygonEditor.Desktop.ViewModels
 
             }
 
-            BitmapCanvas = bitmap.ConvertToBitmapImage();
-            bitmap.Dispose();
-            RaisePropertyChanged("BitmapCanvas");
         }
     }
 }

@@ -112,11 +112,13 @@ namespace PolygonEditor.Desktop.Models
             }
         }
 
-        public void RemoveVertex(int x, int y)
+        public bool RemoveVertex(int x, int y)
         {
             var vertex = GetVertex(x, y);
             vertexes.Remove(vertex);
             constraints.RemoveAll(c => c.IsVertexInvolved(vertex));
+
+            return vertex != null;
         }
 
         public Vertex GetVertex(int x, int y)

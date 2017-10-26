@@ -15,9 +15,11 @@ namespace PolygonEditor.Desktop.Models.InputHandlers
             this.polygon = polygon;
         }
 
-        public abstract void MouseMove(int mouseX, int mouseY);
-        public abstract void MouseLeftDown(int mouseX, int mouseY);
+        public abstract bool MouseMove(int mouseX, int mouseY);
+        public abstract bool MouseLeftDown(int mouseX, int mouseY);
         public abstract void MouseLeftUp(int mouseX, int mouseY);
-        public abstract void MouseRightDown(int mouseX, int mouseY);
+        public abstract bool MouseRightDown(int mouseX, int mouseY);
+
+        public virtual void ResetLeftMousePressed() { }
     }
 }

@@ -23,7 +23,9 @@ namespace PolygonEditor.Desktop.Models.InputHandlers
         {
         }
 
-        public override void MouseLeftDown(int mouseX, int mouseY)
+       
+
+        public override bool MouseLeftDown(int mouseX, int mouseY)
         {
             lastMouseMoveX = mouseX;
             lastMouseMoveY = mouseY;
@@ -37,6 +39,8 @@ namespace PolygonEditor.Desktop.Models.InputHandlers
             {
                 selectedVertex = polygon.AddVertex(mouseX, mouseY, selectedEdge.Item1, selectedEdge.Item2);
             }
+
+            return selectedVertex != null || (selectedEdge.v1 != null && selectedEdge.v2 != null);
         }
 
         public override void MouseLeftUp(int mouseX, int mouseY)
@@ -46,7 +50,7 @@ namespace PolygonEditor.Desktop.Models.InputHandlers
             selectedEdge = (null, null);
         }
 
-        public override void MouseRightDown(int mouseX, int mouseY)
+        public override bool MouseRightDown(int mouseX, int mouseY)
         {
             var vertex = polygon.GetVertex(mouseX, mouseY);
             var edge = polygon.GetVertexesBetween(mouseX, mouseY);
@@ -86,18 +90,30 @@ namespace PolygonEditor.Desktop.Models.InputHandlers
                 }
             }
 
+            return (edge.p1 != null && edge.p2 != null) || (vertex != null);
+
         }
 
-        public override void MouseMove(int mouseX, int mouseY)
+        public override bool MouseMove(int mouseX, int mouseY)
         {
-            if(selectedVertex != null)
+            if (selectedVertex != null)
+            {
                 polygon.SetVertexPosition(selectedVertex, mouseX, mouseY);
+            }
             else if (isLeftMousePressed)
             {
-                polygon.MovePolygon(mouseX-lastMouseMoveX, mouseY-lastMouseMoveY);
+                polygon.MovePolygon(mouseX - lastMouseMoveX, mouseY - lastMouseMoveY);
                 lastMouseMoveX = mouseX;
                 lastMouseMoveY = mouseY;
             }
+
+            return (isLeftMousePressed || selectedVertex != null);
         }
+
+        public override void ResetLeftMousePressed()
+        {
+            isLeftMousePressed = false;
+        }
+
     }
 }

@@ -12,7 +12,7 @@ namespace PolygonEditor.Desktop.Models.InputHandlers
         {
         }
 
-        public override void MouseLeftDown(int mouseX, int mouseY)
+        public override bool MouseLeftDown(int mouseX, int mouseY)
         {
             var vertexOnPoint = polygon.GetVertex(mouseX, mouseY);
             var vertexesBetweenPoint = polygon.GetVertexesBetween(mouseX, mouseY);
@@ -27,21 +27,22 @@ namespace PolygonEditor.Desktop.Models.InputHandlers
             {
                 polygon.AddVertex(mouseX, mouseY);
             }
+
+            return vertexOnPoint != null || (vertexesBetweenPoint.p1 == null && vertexesBetweenPoint.p2 == null);
         }
 
         public override void MouseLeftUp(int mouseX, int mouseY)
         {
-            
         }
 
-        public override void MouseRightDown(int mouseX, int mouseY)
+        public override bool MouseRightDown(int mouseX, int mouseY)
         {
-            polygon.RemoveVertex(mouseX, mouseY);
+            return polygon.RemoveVertex(mouseX, mouseY);
         }
 
-        public override void MouseMove(int mouseX, int mouseY)
+        public override bool MouseMove(int mouseX, int mouseY)
         {
-            
+            return false;
         }
     }
 }
