@@ -13,6 +13,7 @@ namespace PolygonEditor.Desktop.Models
         private readonly List<Vertex> vertexes;
         private readonly List<IVertexConstraint> constraints;
 
+        public bool AutoConstraints { get; set; }
         public bool IsClosed { get; private set; } = false;
 
         public Polygon()
@@ -26,20 +27,23 @@ namespace PolygonEditor.Desktop.Models
             var vertex = new Vertex(x, y);
             vertexes.Add(vertex);
 
-            for(int i=0; i<vertexes.Count; i++)
+            if (AutoConstraints)
             {
-                if(vertexes[i] == vertex)
+                for (int i = 0; i < vertexes.Count; i++)
                 {
-                    if (i - 1 >= 0)
+                    if (vertexes[i] == vertex)
                     {
-                        var v1 = vertexes[i - 1];
-                        AddAutoConstraints(v1, vertex);
-                    }
+                        if (i - 1 >= 0)
+                        {
+                            var v1 = vertexes[i - 1];
+                            AddAutoConstraints(v1, vertex);
+                        }
 
-                    if(i+1 < vertexes.Count)
-                    {
-                        var v1 = vertexes[i + 1];
-                        AddAutoConstraints(v1, vertex);
+                        if (i + 1 < vertexes.Count)
+                        {
+                            var v1 = vertexes[i + 1];
+                            AddAutoConstraints(v1, vertex);
+                        }
                     }
                 }
             }

@@ -51,10 +51,24 @@
             <i:InvokeCommandAction Command="{Binding Resize}"></i:InvokeCommandAction>
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    
-    <Image HorizontalAlignment="Left" 
+
+   
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <CheckBox IsChecked="{Binding AutoConstraints}" Content="Automatyczne relacje"/>
+        </StackPanel>
+        <Image Grid.Row="1" HorizontalAlignment="Left" 
            VerticalAlignment="Top" 
            Source="{Binding BitmapCanvas}" 
            Stretch="None"></Image>
+        
+    </Grid>
+    
+  
     
 </Window>
