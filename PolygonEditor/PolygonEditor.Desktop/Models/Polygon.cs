@@ -25,6 +25,39 @@ namespace PolygonEditor.Desktop.Models
         {
             var vertex = new Vertex(x, y);
             vertexes.Add(vertex);
+
+            for(int i=0; i<vertexes.Count; i++)
+            {
+                if(vertexes[i] == vertex)
+                {
+                    if (i - 1 >= 0)
+                    {
+                        var v1 = vertexes[i - 1];
+                        if(Math.Abs(v1.X-vertex.X) < 5)
+                        {
+                            constraints.Add(new VerticalEdgeConstraint(v1, vertex));
+                        }
+                        if(Math.Abs(v1.Y-vertex.Y) < 5)
+                        {
+                            constraints.Add(new HorizontalEdgeConstraint(v1, vertex));
+                        }
+                    }
+
+                    if(i+1 < vertexes.Count)
+                    {
+                        var v1 = vertexes[i + 1];
+                        if (Math.Abs(v1.X - vertex.X) < 5)
+                        {
+                            constraints.Add(new VerticalEdgeConstraint(v1, vertex));
+                        }
+                        if (Math.Abs(v1.Y - vertex.Y) < 5)
+                        {
+                            constraints.Add(new HorizontalEdgeConstraint(v1, vertex));
+                        }
+                    }
+                }
+            }
+
             return vertex;
         }
 
@@ -149,7 +182,7 @@ namespace PolygonEditor.Desktop.Models
             {
                 if (vertexes[i] == middle)
                 {
-                    return (prev, vertexes[(i + 1) % vertexes.Count]);
+                        return (prev, vertexes[(i + 1) % vertexes.Count]);
                 }
                 prev = vertexes[i];
             }
