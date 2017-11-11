@@ -14,6 +14,7 @@ using PolygonEditor.Desktop.Models;
 using PolygonEditor.Desktop.Models.Constraints;
 using PolygonEditor.Desktop.Models.Filler;
 using PolygonEditor.Desktop.Models.InputHandlers;
+using PolygonEditor.Desktop.Models.Intersections;
 
 namespace PolygonEditor.Desktop.ViewModels
 {
@@ -92,7 +93,12 @@ namespace PolygonEditor.Desktop.ViewModels
                 if(secondInputHandler.MouseLeftDown(mouseX, mouseY))
                     firstInputHandler.ResetLeftMousePressed();
                 if (secondPolygon.IsClosed && secondInputHandler is CreationInputHandler)
+                {
+                    firstPolygon = PolygonIntersection.GetIntersectedPolygon(firstPolygon, secondPolygon);
+                    firstPolygonFiller = new PolygonFiller(firstPolygon);
+                    firstInputHandler = new EditorInputHandler(firstPolygon);
                     secondInputHandler = new EditorInputHandler(secondPolygon);
+                }
             }
 
             RedrawAllPolygons();

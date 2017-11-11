@@ -22,6 +22,18 @@ namespace PolygonEditor.Desktop.Models
             Y = y;
         }
 
+        public static Vertex operator+(Vertex v1, Vertex v2)
+        {
+            return new Vertex(v1.X+v2.X, v1.Y+v2.Y);
+        }
+
+        public static Vertex operator -(Vertex v1, Vertex v2)
+        {
+            return new Vertex(v1.X - v2.X, v1.Y - v2.Y);
+        }
+
+        public static double CrossProduct(Vertex p1, Vertex p2) { return p1.X * p2.Y - p2.X * p1.Y; }
+
         public bool IsNear(int x, int y)
         {
             return (Math.Abs(X - x) <= Epsilon && Math.Abs(Y - y) <= Epsilon);

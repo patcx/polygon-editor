@@ -90,6 +90,12 @@ namespace PolygonEditor.Desktop.Models.Filler
 
         private void RefreshEdgesBucket()
         {
+            if (!polygon.GetEdges().Any())
+            {
+                edgesBucket = new List<EdgeSummary>[1];
+                return;
+            }
+
             int maxY = polygon.GetEdges().Max(v => Math.Max(v.v1.Y, v.v2.Y));
             edgesBucket = new List<EdgeSummary>[maxY+1];
             foreach (var edge in polygon.GetEdges())

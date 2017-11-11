@@ -21,7 +21,7 @@
     <Window.InputBindings>
         <KeyBinding Key="Delete" Command="{Binding DeleteKeyDown}"></KeyBinding>
     </Window.InputBindings>
-    
+
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="MouseMove">
             <cmd:EventToCommand
@@ -33,7 +33,7 @@
             <cmd:EventToCommand
                 Command="{Binding MouseLeftDown}"
                  PassEventArgsToCommand="True">
-             </cmd:EventToCommand>
+            </cmd:EventToCommand>
         </i:EventTrigger>
         <i:EventTrigger EventName="MouseLeftButtonUp">
             <cmd:EventToCommand
@@ -52,8 +52,7 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
-   
-        <Image x:Name="canvas" HorizontalAlignment="Left" 
+    <Image x:Name="canvas" HorizontalAlignment="Left" 
            VerticalAlignment="Top" 
            Source="{Binding BitmapCanvas}" 
            Stretch="None"></Image>
