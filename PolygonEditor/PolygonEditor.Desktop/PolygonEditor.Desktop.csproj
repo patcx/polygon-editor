@@ -76,7 +76,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helpers\BitmapWrapper.cs" />
     <Compile Include="Models\Constraints\AngleConstraint.cs" />
+    <Compile Include="Models\Filler\EdgeSummary.cs" />
+    <Compile Include="Models\Filler\PolygonFiller.cs" />
     <Compile Include="Views\EdgeContextWindow.xaml.cs">
       <DependentUpon>EdgeContextWindow.xaml</DependentUpon>
     </Compile>

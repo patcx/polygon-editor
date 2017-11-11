@@ -53,22 +53,11 @@
     </i:Interaction.Triggers>
 
    
-
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <StackPanel>
-            <CheckBox IsChecked="{Binding AutoConstraints}" Content="Automatyczne relacje"/>
-        </StackPanel>
-        <Image Grid.Row="1" HorizontalAlignment="Left" 
+        <Image x:Name="canvas" HorizontalAlignment="Left" 
            VerticalAlignment="Top" 
            Source="{Binding BitmapCanvas}" 
            Stretch="None"></Image>
         
-    </Grid>
-    
-  
+
     
 </Window>

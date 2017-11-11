@@ -10,14 +10,20 @@ namespace PolygonEditor.Desktop.Models
 {
     public class Polygon
     {
+        private bool isMoveable;
         private readonly List<Vertex> vertexes;
         private readonly List<IVertexConstraint> constraints;
+
+        public event Action<int, int> Moved;
+        public event Action<Vertex> VertexAdded;
+        public event Action<Vertex> VertexMoved;
 
         public bool AutoConstraints { get; set; }
         public bool IsClosed { get; private set; } = false;
 
-        public Polygon()
+        public Polygon(bool isMoveable = true)
         {
+            this.isMoveable = isMoveable;
             vertexes = new List<Vertex>();
             constraints = new List<IVertexConstraint>();
         }
@@ -48,6 +54,7 @@ namespace PolygonEditor.Desktop.Models
                 }
             }
 
+            VertexAdded?.Invoke(vertex);
             return vertex;
         }
 
@@ -77,6 +84,7 @@ namespace PolygonEditor.Desktop.Models
                 {
                     var vertex = new Vertex(x, y);
                     vertexes.Insert(i+1, vertex);
+                    VertexAdded?.Invoke(vertex);
                     return vertex;
                 }
             }
@@ -119,6 +127,11 @@ namespace PolygonEditor.Desktop.Models
 
         public void SetVertexPosition(Vertex p, int x, int y)
         {
+            if (x <= 0)
+                x = 0;
+            if (y <= 0)
+                y = 0;
+
             p.IsLocked = true;
 
             int backupX = p.X;
@@ -139,16 +152,39 @@ namespace PolygonEditor.Desktop.Models
                 }
             }
 
+            if(p.X != backupX || p.Y != backupY)
+                VertexMoved?.Invoke(p);
+
             p.IsLocked = false;
         }
 
         public void MovePolygon(int x, int y)
         {
+            if (!isMoveable)
+                return;
+
+            int xDiff = 0;
+            int yDiff = 0;
+
             foreach (var vertex in vertexes)
             {
                 vertex.X += x;
                 vertex.Y += y;
+
+                if (vertex.X <= xDiff)
+                    xDiff = vertex.X;
+
+                if (vertex.Y <= yDiff)
+                    yDiff = vertex.Y;
             }
+
+            foreach (var vertex in vertexes)
+            {
+                vertex.X -= xDiff;
+                vertex.Y -= yDiff;
+            }
+
+            Moved?.Invoke(x+xDiff, y+yDiff);
         }
 
         public bool RemoveVertex(int x, int y)
