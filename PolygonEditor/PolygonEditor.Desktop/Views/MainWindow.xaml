@@ -17,7 +17,7 @@
     <Window.DataContext>
         <StaticResource ResourceKey="polygon"></StaticResource>
     </Window.DataContext>
-    
+
     <Window.InputBindings>
         <KeyBinding Key="Delete" Command="{Binding DeleteKeyDown}"></KeyBinding>
     </Window.InputBindings>
@@ -52,11 +52,137 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
-    <Image x:Name="canvas" HorizontalAlignment="Left" 
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="300"/>
+        </Grid.ColumnDefinitions>
+
+        <Image x:Name="canvas" HorizontalAlignment="Left" 
            VerticalAlignment="Top" 
            Source="{Binding BitmapCanvas}" 
            Stretch="None"></Image>
-        
 
-    
+        <StackPanel Grid.Column="1">
+            <GroupBox Header="Kolor światła">
+                <Grid Height="30">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Width="60" Margin="3" BorderBrush="Black" BorderThickness="1">
+                        <Rectangle>
+                            <Rectangle.Fill>
+                                <SolidColorBrush Color="{Binding Filling.LightColor}"></SolidColorBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </Border>
+                    <Button Command="{Binding Filling.LightColorPicker}"  Margin="3" Grid.Column="1" Content="Zmień"></Button>
+
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="Kolor obiektu">
+                <Grid Height="60">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <RadioButton IsChecked="{Binding Filling.UseFixedObjectColor}" VerticalAlignment="Center" Content="stały"></RadioButton>
+                    <Border Grid.Column="1" Width="60" Margin="3" BorderBrush="Black" BorderThickness="1">
+                        <Rectangle>
+                            <Rectangle.Fill>
+                                <SolidColorBrush Color="{Binding Filling.ObjectColor}"></SolidColorBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </Border>
+                    <Button Command="{Binding Filling.ObjectColorPicker}" Margin="3" Grid.Column="2" Content="Zmień"></Button>
+
+                    <RadioButton VerticalAlignment="Center" Content="tekstura" Grid.Row="1" Grid.Column="0"></RadioButton>
+                    <Border Grid.Row="1" Grid.Column="1"  Width="60" Margin="3" BorderBrush="Black" BorderThickness="1">
+                        <Image Source="{Binding Filling.ObjectTexture}" Stretch="Fill"></Image>
+                    </Border>
+                    <Button Command="{Binding Filling.SetObjectTexture}" Margin="3" Grid.Row="1" Grid.Column="2" Content="Zmień"></Button>
+
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="Źródło światła">
+                <Grid Height="50">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <RadioButton IsChecked="{Binding Filling.UseFixedLightSource}" VerticalAlignment="Center" Content="stałe"></RadioButton>
+
+
+                    <RadioButton VerticalAlignment="Center" Content="promień" Grid.Row="1" Grid.Column="0"></RadioButton>
+                    <TextBox Text="{Binding Filling.Radius, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" Grid.Column="1"></TextBox>
+
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="Wektor normalny z zaburzeniem">
+                <Grid Height="60">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <RadioButton IsChecked="{Binding Filling.UseFixedNormalVector}" VerticalAlignment="Center" Content="stały"></RadioButton>
+                    
+
+                    <RadioButton VerticalAlignment="Center" Content="tekstura" Grid.Row="1" Grid.Column="0"></RadioButton>
+                    <Border Grid.Row="1" Grid.Column="1" Width="60" Margin="3" BorderBrush="Black" BorderThickness="1">
+                        <Image Source="{Binding Filling.NormalMap}" Stretch="Fill"></Image>
+                    </Border>
+                    <Button Command="{Binding Filling.SetNormalMap}" Margin="3" Grid.Row="1" Grid.Column="2" Content="Zmień"></Button>
+
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="Zaburzenie">
+                <Grid Height="60">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <RadioButton IsChecked="{Binding Filling.UseDisturbanceVector}" VerticalAlignment="Center" Content="brak"></RadioButton>
+
+
+                    <RadioButton VerticalAlignment="Center" Content="tekstura" Grid.Row="1" Grid.Column="0"></RadioButton>
+                    <Border Grid.Row="1" Grid.Column="1" Width="60" Margin="3" BorderBrush="Black" BorderThickness="1">
+                        <Image Source="{Binding Filling.HeightMap}" Stretch="Fill"></Image>
+                    </Border>
+                    <Button Command="{Binding Filling.SetHeightMap}" Margin="3" Grid.Row="1" Grid.Column="2" Content="Zmień"></Button>
+
+                </Grid>
+            </GroupBox>
+        </StackPanel>
+
+    </Grid>
+
 </Window>

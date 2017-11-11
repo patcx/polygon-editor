@@ -11,12 +11,12 @@ namespace PolygonEditor.Desktop.Models.Intersections
     {
         public static Polygon GetIntersectedPolygon(Polygon subjectPolygon, Polygon clipPolygon)
         {
+            var subjectPolygonTmp = subjectPolygon;
 
             if (!clipPolygon.IsConvex())
             {
-                var tmp = subjectPolygon;
                 subjectPolygon = clipPolygon;
-                clipPolygon = tmp;
+                clipPolygon = subjectPolygonTmp;
             }
             if (!clipPolygon.IsConvex())
             {
@@ -28,6 +28,8 @@ namespace PolygonEditor.Desktop.Models.Intersections
             {
                 List<Vertex> input = output;
                 output = new List<Vertex>();
+                if (!input.Any())
+                    return subjectPolygonTmp;
                 Vertex pp = input[input.Count - 1];
                 foreach (var p in input)
                 {
@@ -63,7 +65,7 @@ namespace PolygonEditor.Desktop.Models.Intersections
             }
 
             intersectedPolygon.SetClosed();
-            return intersectedPolygon;
+            return intersectedPolygon.GetVertexes().Any() ? intersectedPolygon : subjectPolygonTmp;
         }
 
         private static bool IsInnerPoint(Vertex p, Vertex[] array, (Vertex, Vertex) seg)

@@ -43,6 +43,8 @@ namespace PolygonEditor.Desktop.ViewModels
             }
         }          
 
+        public PolygonFillingViewModel Filling { get; } = new PolygonFillingViewModel();
+
         public PolygonViewModel()
         {
             firstInputHandler = new EditorInputHandler(firstPolygon);
@@ -89,15 +91,19 @@ namespace PolygonEditor.Desktop.ViewModels
 
             if (!result && firstPolygon.IsClosed)
             {
-           
-                if(secondInputHandler.MouseLeftDown(mouseX, mouseY))
+                if (!Keyboard.IsKeyDown(Key.LeftCtrl))
+                {
                     firstInputHandler.ResetLeftMousePressed();
+                    secondInputHandler.MouseLeftDown(mouseX, mouseY);
+                }
                 if (secondPolygon.IsClosed && secondInputHandler is CreationInputHandler)
                 {
                     firstPolygon = PolygonIntersection.GetIntersectedPolygon(firstPolygon, secondPolygon);
                     firstPolygonFiller = new PolygonFiller(firstPolygon);
                     firstInputHandler = new EditorInputHandler(firstPolygon);
-                    secondInputHandler = new EditorInputHandler(secondPolygon);
+
+                    secondPolygon = new Polygon(false);
+                    secondInputHandler = new CreationInputHandler(secondPolygon);
                 }
             }
 
