@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -11,19 +12,25 @@ using System.Windows.Media;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using PolygonEditor.Desktop.Helpers;
+using PolygonEditor.Desktop.Models.Filler;
 using Color = System.Windows.Media.Color;
 
 namespace PolygonEditor.Desktop.ViewModels
 {
     public class PolygonFillingViewModel : ObservableObject
     {
+
+        private Bitmap objectTexture;
+        private Bitmap normalMap;
+        private Bitmap heightMap;
+
         public bool UseFixedObjectColor { get; set; } = true;
         public bool UseFixedLightSource { get; set; } = true;
-        public bool UseDisturbanceVector { get; set; } = true;
+        public bool UseEmptyDisturbanceVector { get; set; } = true;
         public bool UseFixedNormalVector { get; set; } = true;
 
         public int Radius { get; set; } = 5;
-        public Color ObjectColor { get; private set; } = Color.FromRgb(0, 0, 0);
+        public Color ObjectColor { get; private set; } = Color.FromRgb(100, 100, 100);
         public Color LightColor { get; private set; } = Color.FromRgb(255, 255, 255);
         public ImageSource ObjectTexture { get; private set; }
         public ImageSource NormalMap { get; private set; }
@@ -58,6 +65,7 @@ namespace PolygonEditor.Desktop.ViewModels
             LoadTexture(out bmp);
             if (bmp != null)
             {
+                objectTexture = bmp;
                 ObjectTexture = bmp.ConvertToBitmapImage();
                 RaisePropertyChanged("ObjectTexture");
             }
@@ -69,6 +77,7 @@ namespace PolygonEditor.Desktop.ViewModels
             LoadTexture(out bmp);
             if (bmp != null)
             {
+                normalMap = bmp;
                 NormalMap = bmp.ConvertToBitmapImage();
                 RaisePropertyChanged("NormalMap");
             }
@@ -80,6 +89,7 @@ namespace PolygonEditor.Desktop.ViewModels
             LoadTexture(out bmp);
             if (bmp != null)
             {
+                heightMap = bmp;
                 HeightMap = bmp.ConvertToBitmapImage();
                 RaisePropertyChanged("HeightMap");
             }
@@ -108,6 +118,23 @@ namespace PolygonEditor.Desktop.ViewModels
             {
                 color = Color.FromRgb(dialog.Color.R, dialog.Color.G, dialog.Color.B);
             }
+        }
+
+        public PolygonFillingSettings GetFillingSettings()
+        {
+            return new PolygonFillingSettings()
+            {
+                UseEmptyDisturbanceVector = UseEmptyDisturbanceVector,
+                ObjectTexture = objectTexture?.ConvertToBitmapWrapper(),
+                NormalMap = normalMap?.ConvertToBitmapWrapper(),
+                HeightMap = heightMap?.ConvertToBitmapWrapper(),
+                LightColor = new Vector3((float)LightColor.R/255, (float)LightColor.G/255, (float)LightColor.B/255),
+                ObjectColor = ObjectColor,
+                Radius = Radius,
+                UseFixedLightSource = UseFixedLightSource,
+                UseFixedNormalVector = UseFixedNormalVector,
+                UseFixedObjectColor = UseFixedObjectColor
+            };
         }
     }
 }

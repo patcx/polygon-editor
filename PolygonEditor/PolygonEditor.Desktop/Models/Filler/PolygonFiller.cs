@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace PolygonEditor.Desktop.Models.Filler
 {
     public class PolygonFiller
     {
+        private PolygonFillingSettings settings;
         private Polygon polygon;
         private List<EdgeSummary>[] edgesBucket;
 
@@ -23,6 +25,11 @@ namespace PolygonEditor.Desktop.Models.Filler
             polygon.Moved += (x, y) => { RefreshEdgesBucket(); };
 
             RefreshEdgesBucket();
+        }
+
+        public void SetSettings(PolygonFillingSettings settings)
+        {
+            this.settings = settings;
         }
 
         public void Fill(Bitmap bitmap)
@@ -66,7 +73,7 @@ namespace PolygonEditor.Desktop.Models.Filler
 
                     for (int x = (int) ActiveEdges[i - 1].X; x <= ActiveEdges[i].X; x++)
                     {
-                        bmpWrapper.SetPixel(y, x, Color.Black);
+                        bmpWrapper.SetPixel(y, x, GetColor(x, y));
                     }
                 }
 
@@ -86,6 +93,29 @@ namespace PolygonEditor.Desktop.Models.Filler
 
             Marshal.Copy(pixelBuffer, 0, resultData.Scan0, pixelBuffer.Length);
             bitmap.UnlockBits(resultData);
+        }
+
+        private Color GetColor(int x, int y)
+        {
+            var objCol = settings.GetObjectColorOrTexture(x, y);
+            var lightCol = settings.LightColor;
+
+            var l = settings.GetLightVector();
+            var n = settings.GetNormalVector(x, y);
+
+            var cosAlfa = l.X * n.X + l.Y * n.Y + l.Z * n.Z;
+
+            int r = (int) ((objCol.R * lightCol.X) * cosAlfa);
+            int g = (int) ((objCol.G * lightCol.Y) * cosAlfa);
+            int b = (int) ((objCol.B * lightCol.Z) * cosAlfa);
+
+
+            return Color.FromArgb(RepairColor(r), RepairColor(g), RepairColor(b));
+        }
+
+        private int RepairColor(int r)
+        {
+            return Math.Min(255, Math.Max(0, r));
         }
 
         private void RefreshEdgesBucket()

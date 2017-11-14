@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
@@ -26,6 +28,20 @@ namespace PolygonEditor.Desktop.Helpers
 
                 return bitmapimage;
             }
+        }
+
+        public static BitmapWrapper ConvertToBitmapWrapper(this Bitmap bitmap)
+        {
+            BitmapData sourceData = bitmap.LockBits(new Rectangle(0, 0,
+                                     bitmap.Width, bitmap.Height),
+                                     ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+
+
+            byte[] pixelBuffer = new byte[sourceData.Stride * sourceData.Height];
+            Marshal.Copy(sourceData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
+            bitmap.UnlockBits(sourceData);
+            BitmapWrapper bmpWrapper = new BitmapWrapper(pixelBuffer, bitmap.Height, bitmap.Width);
+            return bmpWrapper;
         }
 
         public static void Fill(this Bitmap bitmap, Color color)

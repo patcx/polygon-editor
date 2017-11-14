@@ -52,7 +52,7 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
-    <Grid>
+    <Grid x:Name="grid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="300"/>
@@ -170,7 +170,7 @@
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
 
-                    <RadioButton IsChecked="{Binding Filling.UseDisturbanceVector}" VerticalAlignment="Center" Content="brak"></RadioButton>
+                    <RadioButton IsChecked="{Binding Filling.UseEmptyDisturbanceVector}" VerticalAlignment="Center" Content="brak"></RadioButton>
 
 
                     <RadioButton VerticalAlignment="Center" Content="tekstura" Grid.Row="1" Grid.Column="0"></RadioButton>
@@ -181,6 +181,7 @@
 
                 </Grid>
             </GroupBox>
+            <Button Height="30" Margin="3" Content="Zatwierdź" Command="{Binding ApplyFillingSettings}"></Button>
         </StackPanel>
 
     </Grid>

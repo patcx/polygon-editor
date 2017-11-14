@@ -13,6 +13,9 @@ namespace PolygonEditor.Desktop.Helpers
         private int height;
         private int width;
 
+        public int Width => width;
+        public int Height => height;
+
         public BitmapWrapper(byte[] bytes, int height, int width)
         {
             this.height = height;

@@ -52,6 +52,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
@@ -78,10 +79,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Helpers\BitmapWrapper.cs" />
+    <Compile Include="Helpers\Drawing.ColorExtender.cs" />
     <Compile Include="Helpers\PolygonExtender.cs" />
+    <Compile Include="Helpers\WindowsMedia.ColorExtender.cs" />
     <Compile Include="Models\Constraints\AngleConstraint.cs" />
+    <Compile Include="Models\Filler\AnimatedLight.cs" />
     <Compile Include="Models\Filler\EdgeSummary.cs" />
     <Compile Include="Models\Filler\PolygonFiller.cs" />
+    <Compile Include="Models\Filler\PolygonFillingSettings.cs" />
     <Compile Include="Models\Intersections\PolygonIntersection.cs" />
     <Compile Include="ViewModels\PolygonFillingViewModel.cs" />
     <Compile Include="Views\EdgeContextWindow.xaml.cs">

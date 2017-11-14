@@ -20,6 +20,7 @@ namespace PolygonEditor.Desktop.ViewModels
 {
     public class PolygonViewModel : ObservableObject
     {
+        private PolygonFillingSettings lastSettings = null;
         private  Polygon firstPolygon = new Polygon();
         private  Polygon secondPolygon = new Polygon(false);
 
@@ -41,7 +42,7 @@ namespace PolygonEditor.Desktop.ViewModels
                 firstPolygon.AutoConstraints = value;
                 secondPolygon.AutoConstraints = value;
             }
-        }          
+        }
 
         public PolygonFillingViewModel Filling { get; } = new PolygonFillingViewModel();
 
@@ -51,19 +52,16 @@ namespace PolygonEditor.Desktop.ViewModels
             secondInputHandler = new CreationInputHandler(secondPolygon);
 
             firstPolygon.AddVertex(100, 100);
-            //firstPolygon.AddVertex(300, 50);
-            //firstPolygon.AddVertex(500, 280);
-            //firstPolygon.AddVertex(800, 300);
-            //firstPolygon.AddVertex(400, 500);
-            //firstPolygon.AddVertex(50, 300);
-
-            firstPolygon.AddVertex(100, 800);
-            firstPolygon.AddVertex(800, 100);
-
+            firstPolygon.AddVertex(300, 50);
+            firstPolygon.AddVertex(500, 280);
+            firstPolygon.AddVertex(800, 300);
+            firstPolygon.AddVertex(400, 500);
+            firstPolygon.AddVertex(50, 300);
 
             firstPolygon.SetClosed();
 
             firstPolygonFiller = new PolygonFiller(firstPolygon);
+            firstPolygonFiller.SetSettings(Filling.GetFillingSettings());
         }
 
 
@@ -85,6 +83,9 @@ namespace PolygonEditor.Desktop.ViewModels
             int mouseX = (int) x.GetPosition((Application.Current.MainWindow as MainWindow).canvas).X;
             int mouseY = (int)x.GetPosition((Application.Current.MainWindow as MainWindow).canvas).Y;
 
+            if (mouseX > GetMaxX())
+                return;
+
             var result = firstInputHandler.MouseLeftDown(mouseX, mouseY);
             if(firstPolygon.IsClosed && firstInputHandler is CreationInputHandler)
                 firstInputHandler = new EditorInputHandler(firstPolygon);
@@ -100,6 +101,7 @@ namespace PolygonEditor.Desktop.ViewModels
                 {
                     firstPolygon = PolygonIntersection.GetIntersectedPolygon(firstPolygon, secondPolygon);
                     firstPolygonFiller = new PolygonFiller(firstPolygon);
+                    firstPolygonFiller.SetSettings(Filling.GetFillingSettings());
                     firstInputHandler = new EditorInputHandler(firstPolygon);
 
                     secondPolygon = new Polygon(false);
@@ -115,6 +117,7 @@ namespace PolygonEditor.Desktop.ViewModels
         {
             int mouseX = (int)x.GetPosition((Application.Current.MainWindow as MainWindow).canvas).X;
             int mouseY = (int)x.GetPosition((Application.Current.MainWindow as MainWindow).canvas).Y;
+
 
             firstInputHandler.MouseLeftUp(mouseX, mouseY);
             secondInputHandler.MouseLeftUp(mouseX, mouseY);
@@ -153,16 +156,43 @@ namespace PolygonEditor.Desktop.ViewModels
             RedrawAllPolygons();
         });
 
-        
+        public ICommand ApplyFillingSettings => new RelayCommand(() =>
+        {
+            if(lastSettings != null)
+                lastSettings.LightMoved -= LastSettings_LightMoved;
+
+            lastSettings = Filling.GetFillingSettings();
+            lastSettings.LightMoved += LastSettings_LightMoved;
+            firstPolygonFiller.SetSettings(lastSettings);
+            RedrawAllPolygons();
+        });
+
+        private void LastSettings_LightMoved()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    RedrawAllPolygons();
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            });
+        }
+
         private void RedrawAllPolygons()
         {
-            int width = (int)(Application.Current.MainWindow as MainWindow).canvas.ActualWidth;
-            int height = (int)(Application.Current.MainWindow as MainWindow).canvas.ActualHeight;
+            int width = (int)(Application.Current.MainWindow as MainWindow).ActualWidth;
+            int height = (int)(Application.Current.MainWindow as MainWindow).ActualHeight;
 
-            var bitmap = new Bitmap((int)Application.Current.MainWindow.ActualWidth, (int)Application.Current.MainWindow.ActualHeight);
+            var bitmap = new Bitmap(width, height);
             bitmap.Fill(Color.White);
 
             RedrawPolygon(bitmap, firstPolygon);
+            firstPolygonFiller.Fill(bitmap);
             RedrawPolygon(bitmap, secondPolygon);
 
             BitmapCanvas = bitmap.ConvertToBitmapImage();
@@ -180,7 +210,7 @@ namespace PolygonEditor.Desktop.ViewModels
             foreach (var vertex in polygon.GetVertexes())
             {
                 var neighbours = polygon.GetNeighbours(vertex);
-                bitmap.DrawCircle(vertex, 3, Color.Maroon);
+                bitmap.DrawCircle(vertex, 5, Color.Maroon);
 
                 var angle = Vertex.AngleBetween(neighbours.Item1, vertex, neighbours.Item2);
                 //bitmap.DrawText(vertex, angle.ToString(), Color.ForestGreen);
@@ -214,9 +244,11 @@ namespace PolygonEditor.Desktop.ViewModels
                     bitmap.DrawCircle(middle, 5, Color.ForestGreen);
                 }
             }
+        }
 
-            firstPolygonFiller.Fill(bitmap);
-
+        private double GetMaxX()
+        {
+            return (Application.Current.MainWindow as MainWindow).grid.ColumnDefinitions[0].ActualWidth;
         }
     }
 }
