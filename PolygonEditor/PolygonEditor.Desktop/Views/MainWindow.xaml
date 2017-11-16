@@ -50,6 +50,9 @@
         <i:EventTrigger EventName="Resize">
             <i:InvokeCommandAction Command="{Binding Resize}"></i:InvokeCommandAction>
         </i:EventTrigger>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding Loaded}"></i:InvokeCommandAction>
+        </i:EventTrigger>
     </i:Interaction.Triggers>
 
     <Grid x:Name="grid">
@@ -134,7 +137,7 @@
                 </Grid>
             </GroupBox>
             <GroupBox Header="Wektor normalny z zaburzeniem">
-                <Grid Height="60">
+                <Grid Height="80">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
@@ -142,23 +145,27 @@
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
 
                     <RadioButton IsChecked="{Binding Filling.UseFixedNormalVector}" VerticalAlignment="Center" Content="stały"></RadioButton>
-                    
-
                     <RadioButton VerticalAlignment="Center" Content="tekstura" Grid.Row="1" Grid.Column="0"></RadioButton>
                     <Border Grid.Row="1" Grid.Column="1" Width="60" Margin="3" BorderBrush="Black" BorderThickness="1">
                         <Image Source="{Binding Filling.NormalMap}" Stretch="Fill"></Image>
                     </Border>
                     <Button Command="{Binding Filling.SetNormalMap}" Margin="3" Grid.Row="1" Grid.Column="2" Content="Zmień"></Button>
-
+                    <RadioButton IsChecked="{Binding Filling.UseMouseFollowNormalVector}"
+                                 VerticalAlignment="Center" 
+                                 Content="kula podązająca za kursorem" 
+                                 Grid.Row="2" 
+                                 Grid.Column="0"
+                                 Grid.ColumnSpan="2"></RadioButton>
                 </Grid>
             </GroupBox>
             <GroupBox Header="Zaburzenie">
-                <Grid Height="60">
+                <Grid Height="80">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
@@ -166,6 +173,7 @@
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
@@ -178,10 +186,14 @@
                         <Image Source="{Binding Filling.HeightMap}" Stretch="Fill"></Image>
                     </Border>
                     <Button Command="{Binding Filling.SetHeightMap}" Margin="3" Grid.Row="1" Grid.Column="2" Content="Zmień"></Button>
+                    
+                    <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Text="Współczynnik"/>
+                    <TextBox Text="{Binding Filling.Factor}" Grid.Row="2" Grid.Column="2"/>
 
                 </Grid>
             </GroupBox>
             <Button Height="30" Margin="3" Content="Zatwierdź" Command="{Binding ApplyFillingSettings}"></Button>
+            <Button Height="30" Margin="3" Content="Obetnij" Command="{Binding ApplyClipping}"></Button>
         </StackPanel>
 
     </Grid>

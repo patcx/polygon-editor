@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,6 +21,9 @@ namespace PolygonEditor.Desktop.ViewModels
 {
     public class PolygonViewModel : ObservableObject
     {
+        private Vector2 prevMousePosition;
+
+
         private PolygonFillingSettings lastSettings = null;
         private  Polygon firstPolygon = new Polygon();
         private  Polygon secondPolygon = new Polygon(false);
@@ -58,12 +62,22 @@ namespace PolygonEditor.Desktop.ViewModels
             firstPolygon.AddVertex(400, 500);
             firstPolygon.AddVertex(50, 300);
 
+            secondPolygon.AddVertex(130, 80);
+            secondPolygon.AddVertex(200, 10);
+            secondPolygon.AddVertex(800, 600);
+            secondPolygon.AddVertex(100, 200);
+
             firstPolygon.SetClosed();
+            secondPolygon.SetClosed();
 
             firstPolygonFiller = new PolygonFiller(firstPolygon);
             firstPolygonFiller.SetSettings(Filling.GetFillingSettings());
         }
 
+        public ICommand Loaded => new RelayCommand(() =>
+        {
+            RedrawAllPolygons();
+        });
 
         public ICommand DeleteKeyDown => new RelayCommand(() =>
         {
@@ -97,19 +111,7 @@ namespace PolygonEditor.Desktop.ViewModels
                     firstInputHandler.ResetLeftMousePressed();
                     secondInputHandler.MouseLeftDown(mouseX, mouseY);
                 }
-                if (secondPolygon.IsClosed && secondInputHandler is CreationInputHandler)
-                {
-                    firstPolygon = PolygonIntersection.GetIntersectedPolygon(firstPolygon, secondPolygon);
-                    firstPolygonFiller = new PolygonFiller(firstPolygon);
-                    firstPolygonFiller.SetSettings(Filling.GetFillingSettings());
-                    firstInputHandler = new EditorInputHandler(firstPolygon);
-
-                    secondPolygon = new Polygon(false);
-                    secondInputHandler = new CreationInputHandler(secondPolygon);
-                }
             }
-
-            RedrawAllPolygons();
 
         });
 
@@ -145,10 +147,24 @@ namespace PolygonEditor.Desktop.ViewModels
             int mouseX = (int)x.GetPosition((Application.Current.MainWindow as MainWindow).canvas).X;
             int mouseY = (int)x.GetPosition((Application.Current.MainWindow as MainWindow).canvas).Y;
 
-            firstInputHandler.MouseMove(mouseX, mouseY);
-            secondInputHandler.MouseMove(mouseX, mouseY);
+            var result1 = firstInputHandler.MouseMove(mouseX, mouseY);
+            var result2 = secondInputHandler.MouseMove(mouseX, mouseY);
 
-            RedrawAllPolygons();
+            if(result1 || result2)
+                RedrawAllPolygons();
+
+            if (Math.Abs(mouseX - prevMousePosition.X) > 10 || Math.Abs(mouseY - prevMousePosition.Y) > 10)
+            {
+                prevMousePosition.X = mouseX;
+                prevMousePosition.Y = mouseY;
+
+                if (lastSettings?.UseMouseFollowNormalVector == true)
+                {
+                    lastSettings.SetMouse(mouseX, mouseY);
+                    RedrawAllPolygons();
+                }
+            }
+
         });
 
         public ICommand Resize => new RelayCommand(() =>
@@ -165,6 +181,22 @@ namespace PolygonEditor.Desktop.ViewModels
             lastSettings.LightMoved += LastSettings_LightMoved;
             firstPolygonFiller.SetSettings(lastSettings);
             RedrawAllPolygons();
+        });
+
+        public ICommand ApplyClipping => new RelayCommand(() =>
+        {
+            if (secondPolygon.IsClosed && secondInputHandler is CreationInputHandler)
+            {
+                firstPolygon = PolygonIntersection.GetIntersectedPolygon(firstPolygon, secondPolygon);
+                firstPolygonFiller = new PolygonFiller(firstPolygon);
+                firstPolygonFiller.SetSettings(Filling.GetFillingSettings());
+                firstInputHandler = new EditorInputHandler(firstPolygon);
+
+                secondPolygon = new Polygon(false);
+                secondInputHandler = new CreationInputHandler(secondPolygon);
+
+                RedrawAllPolygons();
+            }
         });
 
         private void LastSettings_LightMoved()

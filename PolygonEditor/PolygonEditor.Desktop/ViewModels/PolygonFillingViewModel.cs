@@ -28,13 +28,31 @@ namespace PolygonEditor.Desktop.ViewModels
         public bool UseFixedLightSource { get; set; } = true;
         public bool UseEmptyDisturbanceVector { get; set; } = true;
         public bool UseFixedNormalVector { get; set; } = true;
+        public bool UseMouseFollowNormalVector { get; set; }
 
+        public float Factor { get; set; } = 1;
         public int Radius { get; set; } = 5;
         public Color ObjectColor { get; private set; } = Color.FromRgb(100, 100, 100);
         public Color LightColor { get; private set; } = Color.FromRgb(255, 255, 255);
         public ImageSource ObjectTexture { get; private set; }
         public ImageSource NormalMap { get; private set; }
         public ImageSource HeightMap { get; private set; }
+
+
+        public PolygonFillingViewModel()
+        {
+            objectTexture = Properties.Resources.texture;
+            ObjectTexture = objectTexture.ConvertToBitmapImage();
+            RaisePropertyChanged("ObjectTexture");
+
+            normalMap = Properties.Resources.normal_map;
+            NormalMap = normalMap.ConvertToBitmapImage();
+            RaisePropertyChanged("NormalMap");
+
+            heightMap = Properties.Resources.brick_heightmap;
+            HeightMap = heightMap.ConvertToBitmapImage();
+            RaisePropertyChanged("HeightMap");
+        }
 
         public ICommand ObjectColorPicker => new RelayCommand(() =>
         {
@@ -133,7 +151,9 @@ namespace PolygonEditor.Desktop.ViewModels
                 Radius = Radius,
                 UseFixedLightSource = UseFixedLightSource,
                 UseFixedNormalVector = UseFixedNormalVector,
-                UseFixedObjectColor = UseFixedObjectColor
+                UseFixedObjectColor = UseFixedObjectColor,
+                Factor = Factor,
+                UseMouseFollowNormalVector = UseMouseFollowNormalVector
             };
         }
     }

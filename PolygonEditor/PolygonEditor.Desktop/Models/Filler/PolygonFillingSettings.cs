@@ -12,6 +12,7 @@ namespace PolygonEditor.Desktop.Models.Filler
 {
     public class PolygonFillingSettings
     {
+        private Vector2 mousePosition;
         public event Action LightMoved;
 
         private AnimatedLight animatedLight = new AnimatedLight();
@@ -20,6 +21,8 @@ namespace PolygonEditor.Desktop.Models.Filler
         public bool UseFixedLightSource { get; set; } = true;
         public bool UseEmptyDisturbanceVector { get; set; } = true;
         public bool UseFixedNormalVector { get; set; } = true;
+        public bool UseMouseFollowNormalVector { get; set; }
+        public float Factor { get; set; }
 
         public int Radius
         {
@@ -64,14 +67,25 @@ namespace PolygonEditor.Desktop.Models.Filler
         {
             Vector3 normalVec;
             Vector3 disturbanceVector;
-            if (!UseFixedNormalVector && NormalMap != null)
+
+            if (!UseFixedNormalVector && !UseMouseFollowNormalVector && NormalMap != null)
             {
                 var normalColor = NormalMap.GetPixel(y%NormalMap.Height, x%NormalMap.Width);
                 normalVec = new Vector3(normalColor.R - 127, normalColor.G - 127, normalColor.B - 127);
                 normalVec.X /= 127;
                 normalVec.Y /= 127;
                 normalVec.Z /= 127;
+                normalVec = Vector3.Normalize(normalVec);
+            }
+            else if (UseMouseFollowNormalVector)
+            {
+                var dx = mousePosition.X - x;
+                var dy = mousePosition.Y - y;
 
+                var z = 100 * 100 - dx * dx - dy * dy;
+                z = z < 0 ? 0 : (float)Math.Sqrt(z);
+
+                normalVec = Vector3.Normalize(new Vector3(dx, dy, z));
             }
             else
                 normalVec = new Vector3(0, 0, 1);
@@ -82,8 +96,8 @@ namespace PolygonEditor.Desktop.Models.Filler
                 var rightHCol = HeightMap.GetPixel(y % HeightMap.Height, (x + 1) % HeightMap.Width);
                 var downHCol = HeightMap.GetPixel((y +1) % HeightMap.Height, x % HeightMap.Width);
 
-                var dhx = rightHCol.R - hCol.R + rightHCol.G - hCol.G + rightHCol.B - hCol.B;
-                var dhy = downHCol.R - hCol.R + downHCol.G - hCol.G + downHCol.B - hCol.B;
+                var dhx = (rightHCol.R - hCol.R + rightHCol.G - hCol.G + rightHCol.B - hCol.B) * Factor;
+                var dhy = (downHCol.R - hCol.R + downHCol.G - hCol.G + downHCol.B - hCol.B) * Factor;
 
                 disturbanceVector =  new Vector3(dhx, 0, -normalVec.X+dhx) + new Vector3(dhy, 0, -normalVec.Y*dhy);
             }
@@ -92,6 +106,12 @@ namespace PolygonEditor.Desktop.Models.Filler
 
             var normalPrim = normalVec + disturbanceVector;
             return Vector3.Normalize(normalPrim);
+        }
+
+        public void SetMouse(int x, int y)
+        {
+            mousePosition.X = x;
+            mousePosition.Y = y;
         }
     }
 }

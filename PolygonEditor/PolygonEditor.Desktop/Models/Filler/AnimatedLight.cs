@@ -21,7 +21,7 @@ namespace PolygonEditor.Desktop.Models.Filler
 
         public AnimatedLight()
         {
-            timer = new Timer(500);
+            timer = new Timer(1000);
             timer.Elapsed += Timer_Elapsed;
             timer.Start();
         }
